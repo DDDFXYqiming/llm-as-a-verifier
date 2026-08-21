@@ -417,13 +417,19 @@ def call_openai(client, prompt, model=DEFAULT_MODEL, top_logprobs=20,
     params = dict(
         model=resolve_model(client, model),
         messages=[{"role": "user", "content": content}],
-        max_tokens=4096,
+        # Research patch: thinking models (MiMo, Qwen, ...) need a budget
+        # that covers BOTH the reasoning trace and the answer; 4096 gets
+        # eaten by thinking alone. Override via LLM_VERIFIER_MAX_TOKENS
+        # (e.g. 32768 to match DEEPSEEK_MAX_TOKENS).
+        max_tokens=int(os.environ.get("LLM_VERIFIER_MAX_TOKENS", "4096")),
         temperature=1.0,
         logprobs=True,
         top_logprobs=top_logprobs,  # the OpenAI API caps this at 20
     )
     try:
         # vLLM/SGLang only: skip hybrid-thinking so score tags come fast.
+        # Thinking models that reject chat_template_kwargs fall back below,
+        # keeping their native (enabled) thinking.
         response = client.chat.completions.create(
             extra_body={"chat_template_kwargs": {"enable_thinking": False}},
             **params)

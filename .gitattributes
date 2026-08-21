@@ -1,0 +1,2 @@
+# 统一 LF，根治 Windows 工具改写 CRLF 造成的大量伪变更
+* text=auto eol=lf
