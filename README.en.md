@@ -12,14 +12,13 @@
 
 Traditional "LLM-as-a-Judge" setups suffer from high variance and discrete scoring collapse. `LLM-as-a-Verifier` introduces three architectural pillars:
 
-```
-[Agent Trajectory / Code Candidates] ──> [Criteria Decomposition]
-                                                    │
-                                                    ▼
-[Smooth Expected Reward E[R]] <── [Logprob Integration] <── [Pairwise Comparisons & Repetitions]
-          │
-          ▼
-[Core Applications: Best-of-N Test-Time Scaling | Step-by-Step Progress Tracking | RL Rewards]
+```mermaid
+flowchart TD
+    A["Agent Trajectory / Code Candidates"] --> B["Atomic Criteria Decomposition"]
+    B --> C["Pairwise Comparison & Repeated Verifier Sampling"]
+    C --> D["Expectation Integration over Full Logprob Distribution"]
+    D --> E["Smooth Continuous Reward Signal E[Reward]"]
+    E --> F["Downstream Modes<br/>(Best-of-N Test-Time Scaling | Incremental Progress Tracking | RL Reward Modeling)"]
 ```
 
 1. **Criteria Decomposition**: Breaks complex problem specifications into verifiable atomic sub-criteria.

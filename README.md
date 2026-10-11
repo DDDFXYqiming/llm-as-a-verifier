@@ -12,14 +12,13 @@
 
 传统的大模型验证（LLM-as-a-Judge）往往依赖输出离散的布尔值或整数评分，极易引发打分漂移与方差剧增。`LLM-as-a-Verifier` 引入了三大核心支柱：
 
-```
-[智能体候选轨迹 / 代码方案] ──> [多维度准则解构 (Criteria Decomposition)]
-                                              │
-                                              ▼
-[平滑期望收益 E[Reward]] <── [Logprob 全概率分布积分] <── [成对比较与重复评估]
-         │
-         ▼
-[三大应用形态: Best-of-N 测试期缩放 | 逐步进度追踪 (track) | RL 强化学习奖励]
+```mermaid
+flowchart TD
+    A["候选方案 / 智能体轨迹集合"] --> B["原子准则解构 (Criteria Decomposition)"]
+    B --> C["LLM 验证器成对比较与重复采样"]
+    C --> D["Logprob 全概率分布连续积分运算"]
+    D --> E["输出平滑期望奖励 E[Reward]"]
+    E --> F["下游应用形态<br/>(Best-of-N 测试期缩放 | 单步进度追踪 | 强化学习奖励信号)"]
 ```
 
 1. **准则精细分解（Criteria Decomposition）**：将复合目标拆解为可独立核验的原子准则（如代码正确性、边界条件处理、副作用约束等）。
